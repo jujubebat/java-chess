@@ -2,6 +2,8 @@ package dao;
 
 import domain.chessgame.ChessGame;
 import exception.DataBaseException;
+import exception.DeserializeException;
+import exception.SerializeException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,8 +51,8 @@ public class ChessGameDao {
             }
 
             return chessGame(rs.getString("serialized_base64_chess_game"));
-        } catch (SQLException | IOException e) {
-            throw new DataBaseException();
+        } catch (SQLException e) {
+            throw new DataBaseException(e);
         }
     }
 
@@ -65,33 +67,34 @@ public class ChessGameDao {
             pstmt.setString(3, serializedChessGame(chessGame));
             pstmt.executeUpdate();
             return selectByGameId(gameId);
-        } catch (SQLException | IOException e) {
-            throw new DataBaseException();
+        } catch (SQLException e) {
+            throw new DataBaseException(e);
         }
     }
 
-    public String serializedChessGame(ChessGame chessGame) throws IOException {
+    public String serializedChessGame(ChessGame chessGame) {
         byte[] serializedMember;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
                 oos.writeObject(chessGame);
                 serializedMember = baos.toByteArray();
             }
+        } catch (IOException e) {
+            throw new SerializeException(e);
         }
         return Base64.getEncoder().encodeToString(serializedMember);
     }
 
-    public ChessGame chessGame(String serializedMember) throws IOException {
+    public ChessGame chessGame(String serializedMember) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(
             Base64.getDecoder().decode(serializedMember))) {
             try (ObjectInputStream ois = new ObjectInputStream(bais)) {
                 Object objectMember = ois.readObject();
                 return (ChessGame) objectMember;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new DeserializeException(e);
         }
-        throw new IOException();
     }
 
 }
