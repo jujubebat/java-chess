@@ -35,9 +35,6 @@ public class WebUIChessApplication {
     private static void initServerConfiguration() {
         port(8080);
         staticFiles.location("/static");
-        exception(IllegalArgumentException.class, (exception, request, response) -> {
-            response.body(GSON.toJson(exception.getMessage()));
-        });
     }
 
     private static void getMainPage() {
