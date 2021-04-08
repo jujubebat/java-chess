@@ -37,11 +37,11 @@ public class ChessGameService {
         return pieceResponseDtos;
     }
 
-    public PiecesResponseDto putPiece(PiecesRequestDto piecesRequestDto){
+    public PiecesResponseDto putPiece(PiecesRequestDto piecesRequestDto) {
         ChessGame chessGame = chessGameDao.selectByGameId(piecesRequestDto.getGameId());
         chessGame.move(new Position(piecesRequestDto.getSource()), new Position(piecesRequestDto.getTarget()));
         chessGame = chessGameDao.updateChessGameByGameId(piecesRequestDto.getGameId(), chessGame);
-        
+
         return new PiecesResponseDto(chessGame, pieceResponseDtos(chessGame));
     }
 

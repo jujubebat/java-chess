@@ -8,24 +8,11 @@ public class PiecesResponseDto {
 
     private final boolean isPlaying;
     private final List<PieceResponseDto> pieces;
-    private final boolean isSuccess;
-    private final String responseMessage;
     private final String winner;
 
     public PiecesResponseDto(ChessGame chessGame, List<PieceResponseDto> pieces) {
         this.isPlaying = chessGame.isPlaying();
         this.pieces = pieces;
-        this.isSuccess = true;
-        this.responseMessage = "";
-        this.winner = winner(chessGame);
-    }
-
-    public PiecesResponseDto(ChessGame chessGame, List<PieceResponseDto> pieces,
-        String errorMessage) {
-        this.isPlaying = chessGame.isPlaying();
-        this.pieces = pieces;
-        this.isSuccess = false;
-        this.responseMessage = errorMessage;
         this.winner = winner(chessGame);
     }
 
