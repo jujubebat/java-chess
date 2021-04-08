@@ -9,7 +9,9 @@ import dto.request.ChessGameRequestDto;
 import dto.request.PiecesRequestDto;
 import dto.request.ScoreRequestDto;
 import exception.DataBaseException;
+import exception.DeserializeException;
 import exception.PieceMoveException;
+import exception.SerializeException;
 import java.util.HashMap;
 import java.util.Map;
 import service.ChessGameService;
@@ -70,6 +72,13 @@ public class WebUIChessApplication {
         }, GSON::toJson);
     }
 
+    private static void exceptionHandler() {
+        pieceMoveExceptionHandler();
+        dataBaseExceptionHandler();
+        serializeExceptionHandler();
+        deserializeExceptionHandler();
+    }
+
     private static void pieceMoveExceptionHandler() {
         exception(PieceMoveException.class, (exception, request, response) -> {
             response.status(500);
@@ -84,9 +93,18 @@ public class WebUIChessApplication {
         });
     }
 
-    private static void exceptionHandler() {
-        pieceMoveExceptionHandler();
-        dataBaseExceptionHandler();
+    private static void serializeExceptionHandler() {
+        exception(SerializeException.class, (exception, request, response) -> {
+            response.status(500);
+            response.body(exception.getMessage());
+        });
+    }
+
+    private static void deserializeExceptionHandler() {
+        exception(DeserializeException.class, (exception, request, response) -> {
+            response.status(500);
+            response.body(exception.getMessage());
+        });
     }
 
     private static String render(Map<String, Object> model, String templatePath) {
